@@ -265,6 +265,47 @@
         const DECELERATION = 0.02;
         
         // --- STATE ---
+        
+        // --- AUDIO SYSTEM ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            
+            if (type === 'COIN') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'POWERUP') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.linearRampToValueAtTime(1500, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'EXPLOSION') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.exponentialRampToValueAtTime(10, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+        }
+
         let gameState = {
             isPlaying: false,
             score: 0,
@@ -642,10 +683,12 @@
                             if (gameState.shieldActive) {
                                 gameState.shieldActive = false;
                                 createExplosion(obs.mesh.position);
+                                playSound('EXPLOSION');
                                 scene.remove(obs.mesh);
                                 obstacles.splice(i, 1);
                                 continue; // Skip removal check below
                             } else {
+                                playSound('EXPLOSION');
                                 gameOver();
                             }
                         }
@@ -682,10 +725,11 @@
                     if (item.type === 'COIN') {
                         gameState.coins += 1;
                         document.getElementById('coin-board').innerText = `COINS: ${gameState.coins}`;
+                        playSound('COIN');
                     }
-                    if (item.type === 'SHIELD') gameState.shieldActive = true;
-                    if (item.type === 'MAGNET') { gameState.magnetActive = true; gameState.magnetTimer = 500; }
-                    if (item.type === 'HYPER') { gameState.hyperSpeedActive = true; gameState.hyperTimer = 300; }
+                    if (item.type === 'SHIELD') { gameState.shieldActive = true; playSound('POWERUP'); }
+                    if (item.type === 'MAGNET') { gameState.magnetActive = true; gameState.magnetTimer = 500; playSound('POWERUP'); }
+                    if (item.type === 'HYPER') { gameState.hyperSpeedActive = true; gameState.hyperTimer = 300; playSound('POWERUP'); }
                     
                     scene.remove(item.mesh);
                     collectibles.splice(i, 1);
@@ -722,6 +766,8 @@
         }
 
         function resetGame() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
             gameState.score = 0;
             gameState.coins = 0;
             gameState.speed = 0;
