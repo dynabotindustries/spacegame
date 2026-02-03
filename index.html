@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Body Controlled Endless Space Game</title>
+    <title>A Space Game!</title>
     <style>
         body { margin: 0; overflow: hidden; font-family: 'Courier New', Courier, monospace; background-color: #000000; }
         
@@ -192,6 +192,20 @@
         }
         #about-modal h2 { color: #ff00ff; margin-bottom: 20px; font-size: 36px; text-shadow: 0 0 10px #ff00ff; }
         #about-modal p { color: #fff; font-size: 20px; margin-bottom: 15px; line-height: 1.6; }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            #preview-wrapper {
+                width: 160px;
+                height: 120px;
+                border-width: 2px;
+            }
+            h1 { font-size: 30px; letter-spacing: 2px; }
+            p { font-size: 14px; }
+            .btn { padding: 10px 20px; font-size: 18px; }
+            #score-board { font-size: 24px; }
+            #controls-container { transform: scale(0.8); transform-origin: bottom left; }
+        }
     </style>
 
     <!-- Three.js -->
@@ -227,7 +241,7 @@
     <!-- Start/Game Over Screen -->
     <div id="overlay">
         <div class="loader" id="loader"></div>
-        <h1 id="title-text">The Space Game IG</h1>
+        <h1 id="title-text">A Space Game!</h1>
         <p id="instruction-text">Allow camera access to play.<br>Stand back so your upper body is visible.</p>
         <button class="btn hidden" id="start-btn">START GAME</button>
         <button class="btn hidden" id="about-btn" style="margin-top: 15px; background: #00aaff;">ABOUT</button>
@@ -513,7 +527,7 @@
             }
             if (gameState.speed < 0) gameState.speed = 0;
 
-            gameState.score += 1;
+            gameState.score += gameState.speed;
             document.getElementById('score-board').innerText = `SCORE: ${Math.floor(gameState.score / 10)}`;
 
             // Hyper Speed Logic
