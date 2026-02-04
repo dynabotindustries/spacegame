@@ -2,6 +2,7 @@
 This is a Cool Space game.
 It uses Mediapipe.js to run pose estimation on the webcam feed and use it to control a "spaceship".
 # TO Play
+* Head over to https://spacegame-cyan.vercel.app/
 * Put your arms forward as if you were holding a steering wheel
 * A blue steering wheel should appear and the space ship should start moving
 * rotate your arms to control the ship
